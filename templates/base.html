@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/style.css') }}' type='text/css' />
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/highlight.css') }}' type='text/css' />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src='{{ url_for('static', filename='js/marked.js') }}'></script>
+    <script type="text/javascript" src='{{ url_for('static', filename='js/highlight.pack.js') }}'></script>
+    <title>{% block title %}{% endblock %} | Discussion Circles</title>
+    <script type="text/javascript">
+        marked.setOptions({
+            smartypants: true,
+            highlight: function(code, lang) { 
+                if(lang) {
+                    try { return hljs.highlight(lang, code).value } catch(e){}
+                }
+                return hljs.highlightAuto(code).value
+            }
+        });
+    </script>
+</head>
+
+<body>
+<div id="container">
+    <a href="{{url_for('index')}}" id="logo">
+        Discussion <span class="circle">Circles</span>
+    </a>
+    <div id="navbar">
+        {{ current_user.name }} </br>
+        <a href="/#todo">Settings</a> </br>
+        <a href="{{url_for('logout')}}">Log out</a>
+    </div>
+    <div class="clear"></div>
+
+
+    {% set flashes = get_flashed_messages() %}
+    {% if flashes %}
+    <div id="flash">
+        <ul>{% for flash in flashes %}<li>{{ flash }}</li>{% endfor %}<ul>
+    </div>
+    {% endif %}
+
+    <div id="content">
+    {% block content %}
+    {% endblock %}
+    </div>
+</div>
+</body>
+
+</html>

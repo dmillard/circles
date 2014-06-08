@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<div class="topic">Circles</div>
+
+<ul>
+{% for circle, count in circles_and_counts %}
+    <li>
+        <a href="{{ url_for('circle', circle_id=circle.id) }}">{{ circle.topic }}</a>
+        ({{ count }} posts)
+    </li>
+{% else %}
+No circles to display.
+{% endfor %}
+<form action="/" method="post">
+    <li>
+    <input type="text" id="topic" name="topic" />
+    <button type="submit">Create</button>
+    </li>
+</form>
+</ul>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}{{ circle.topic }}{% endblock %}
+
+{% block content %}
+
+<p class="note">
+Viewing post history.
+(<a href="{{ url_for('circle', circle_id=circle.id) }}">Return to {{circle.topic}} circle</a>
+or <a href="{{ url_for('edit', circle_id=circle.id, post_id=post.id) }}">edit post</a>)
+</p>
+
+<div class="post-container">
+<div class="post-meta">
+    {{ post.last_editor.name }} </br>
+    {{ post.last_rev_time.strftime('%d %b %Y') }} </br>
+    {{ post.last_rev_time.strftime('%I:%M %p') }}
+</div>
+<div class="post">
+    <div id="post{{post.id}}">{{ post.content }}</div>
+    <script type="text/javascript">
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, "post{{post.id}}"])
+    MathJax.Hub.Register.MessageHook("End Process", function(msg) {
+            $("#post{{post.id}}").contents().each(function(i, e) {
+                if(e.nodeType === 3) $(e).replaceWith(marked(e.data))
+            })
+    })
+    </script>
+</div>
+</div>
+
+{% for entry in history %}
+<div class="post-container">
+<div class="post-meta">
+    {{ entry.editor.name }} </br>
+    {{ entry.time.strftime('%d %b %Y') }} </br>
+    {{ entry.time.strftime('%I:%M %p') }}
+</div>
+<div class="post">
+    <div id="entry{{entry.id}}">{{ entry.content }}</div>
+    <script type="text/javascript">
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, "entry{{entry.id}}"])
+    MathJax.Hub.Register.MessageHook("End Process", function(msg) {
+            $("#entry{{entry.id}}").contents().each(function(i, e) {
+                if(e.nodeType === 3) $(e).replaceWith(marked(e.data))
+            })
+    })
+    </script>
+</div>
+</div>
+{% endfor %}
+
+{% endblock %}

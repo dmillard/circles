@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}{{ circle.topic }}{% endblock %}
+
+{% block content %}
+
+<div class="topic">
+    {{ circle.topic }} 
+</div>
+
+{% for post in posts %}
+<div class="post-container">
+<div class="post-meta">
+    {{ post.author.name }} </br>
+    {{ post.time.strftime('%d %b %Y') }} </br>
+    {{ post.time.strftime('%I:%M %p') }}
+</div>
+<div class="post-controls">
+    <a href={{ url_for('edit', circle_id=circle.id, post_id=post.id) }}>
+        edit
+    </a>
+    </br>
+    {% if post.deleted %}
+    <a href={{ url_for('delete', circle_id=circle.id, post_id=post.id, undelete=1) }}>
+        undelete
+    </a>
+    {% else %}
+    <a href={{ url_for('delete', circle_id=circle.id, post_id=post.id) }}>
+        delete
+    </a>
+    {% endif %}
+    </br>
+</div>
+<div class="post{% if post.deleted %} deleted{% endif %}">
+    {% if post.deleted %}
+    <p class="note"> This post was deleted on
+    {{ post.deletion_time.strftime('%d %b %Y at %I:%M %p') }} by
+    {{ post.deletor.name }}</p>
+    {% endif %}
+    {% if post.edited %}
+    <p class="note"> This post was edited on
+    {{ post.last_rev_time.strftime('%d %b %Y at %I:%M %p') }} by
+    {{ post.last_editor.name }}
+    (<a href={{ url_for('history', circle_id=circle.id, post_id=post.id) }}>view history</a>)
+    </p>
+    {% endif %}
+    <div id="post{{post.id}}">{{ post.content }}</div>
+    <script type="text/javascript">
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, "post{{post.id}}"])
+    MathJax.Hub.Register.MessageHook("End Process", function(msg) {
+            $("#post{{post.id}}").contents().each(function(i, e) {
+                if(e.nodeType === 3) $(e).replaceWith(marked(e.data))
+            })
+    })
+    </script>
+</div>
+</div>
+{% else %}
+No posts to display.
+{% endfor %}
+
+<hr/>
+<div class="post-container">
+    <div id="preview-meta" class="post-meta">
+        {{ current_user.name }} </br>
+        <span id="date1"></span> </br>
+        <span id="date2"></span>
+        <script type="text/javascript">
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+                'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            var time = function() {
+                var d = new Date()
+                $("#date1").text(
+                    d.getDate() + " " +
+                    months[d.getMonth()] + " " +
+                    d.getFullYear()
+                )
+                $("#date2").text(
+                    ("0"+(d.getHours()%12)).slice(-2) + ":" +
+                    ("0"+d.getMinutes()).slice(-2) + " " +
+                    (d.getHours() > 11 ? "PM" : "AM")
+                )
+                setTimeout(time, 30000)
+            }; time()
+        </script>
+    </div>
+    <div id="preview" class="post"></div>
+</div>
+<div class="post-form">
+    <form action="{{ url_for('circle', circle_id=circle.id) }}" method="post">
+        <textarea id="input-content" name="input-content" oninput="this.editor.update()"></textarea>
+        <button type="submit">Post</button>
+    </form>
+</div>
+
+<script type="text/javascript">
+var updateTimeout
+function Editor(input, preview) {
+    this.update = function() {
+        window.clearTimeout(updateTimeout)
+        updateTimeout = window.setTimeout(function() {
+            preview.innerHTML = input.value
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, "preview"])
+            MathJax.Hub.Register.MessageHook("End Process", function(msg) {
+                $(preview).contents().each(function(i, e) {
+                    if(e.nodeType === 3) $(e).replaceWith(marked(e.data))
+                })
+            })
+        }, 500)
+    }
+    input.editor = this
+    this.update()
+}
+var getId = function(id) { return document.getElementById(id) }
+new Editor(getId("input-content"), getId("preview"))
+</script>
+
+{% endblock %}

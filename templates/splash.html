@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/style.css') }}' type='text/css' />
+    <script type="text/javascript">
+    preload = function(img) { (new Image()).src = img; }
+    preload("{{ url_for('static', filename='img/google/base.png') }}");
+    preload("{{ url_for('static', filename='img/google/hover.png') }}");
+    preload("{{ url_for('static', filename='img/google/press.png') }}");
+    </script>
+</head>
+<body>
+    <div id="splash">
+        Discussion <span class="circle">Circles</span>
+        <a href='/login'><div id="login"></div></a>
+    </div>
+</body>
