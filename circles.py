@@ -2,6 +2,8 @@
 
 import json
 from datetime import datetime
+from os.path import dirname, abspath, join
+cwd = abspath(dirname(__file__))
 
 from flask import *
 from flask.ext.oauthlib.client import OAuth
@@ -9,6 +11,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import flask.ext.login as fl
 
 from sqlalchemy.exc import IntegrityError
+
 
 app = Flask(__name__)
 app.debug = True
@@ -30,14 +33,14 @@ def key_gen(n):
 
 try:
     # get a stored secret key
-    with open('secret_key.json', 'r') as f:
+    with open(join(cwd, 'secret_key.json'), 'r') as f:
         app.secret_key = json.load(f)['secret_key']
 except:
     app.secret_key = key_gen(64)
-    with open('secret_key.json', 'w') as f:
+    with open(join(cwd, 'secret_key.json'), 'w') as f:
         json.dump({'secret_key' : app.secret_key}, f)
 
-with open('client_secrets.json', 'r') as f:
+with open(join(cwd, 'client_secrets.json'), 'r') as f:
     client_secrets = json.load(f)['web']
     app.config['GOOGLE_ID'] = client_secrets['client_id']
     app.config['GOOGLE_SECRET'] = client_secrets['client_secret']
