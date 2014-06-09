@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = join('sqlite:///', cwd, 'circles.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + join(cwd, 'circles.db')
 oauth = OAuth(app)
 db = SQLAlchemy(app)
 login_manager = fl.LoginManager()
@@ -202,7 +202,7 @@ def authorized(resp):
 
     else:
         # is user on the allowed list?
-        allowed = json.load(open('allowed.json', 'r'))['allowed']
+        allowed = json.load(open(join(cwd, 'allowed.json'), 'r'))['allowed']
         if guser.data['email'] in allowed:
             # create, commit, and login new user
             gid = guser.data['id']
