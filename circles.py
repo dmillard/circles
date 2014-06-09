@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///circles.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = join('sqlite:///', cwd, 'circles.db')
 oauth = OAuth(app)
 db = SQLAlchemy(app)
 login_manager = fl.LoginManager()
