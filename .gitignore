@@ -1,0 +1,5 @@
+__pycache__
+circles.db
+secret_key.json
+client_secrets.json
+allowed.json
